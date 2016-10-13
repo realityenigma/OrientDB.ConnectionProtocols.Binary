@@ -27,7 +27,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
 
         public Request CreateRequest()
         {
-            Request request = new Request(OperationMode.Asynchronous);
+            Request request = new Request(OperationMode.Asynchronous); // This may not be async actually.
 
             request.AddDataItem((byte)OperationType.DB_CLOSE);
             request.AddDataItem(request.SessionId);
