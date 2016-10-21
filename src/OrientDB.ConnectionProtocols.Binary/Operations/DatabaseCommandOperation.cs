@@ -74,7 +74,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
                 default:
                     break;
             }
-            return new CommandResult<T>(Enumerable.Empty<T>());           
+            return new CommandResult<T>(documents);           
         }
 
         private T ParseDocument(BinaryReader reader) 
