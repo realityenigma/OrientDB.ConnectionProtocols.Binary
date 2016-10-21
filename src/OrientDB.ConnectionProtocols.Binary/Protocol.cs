@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OrientDB.ConnectionProtocols.Binary.Core;
 using OrientDB.ConnectionProtocols.Binary.Contracts;
+using OrientDB.Core.Models;
 
 namespace OrientDB.ConnectionProtocols.Binary
 {
@@ -33,14 +34,15 @@ namespace OrientDB.ConnectionProtocols.Binary
             throw new NotImplementedException();
         }
 
-        public IEnumerable<TResultType> ExecuteQuery<TResultType>(string sql, IOrientDBRecordSerializer<byte[]> serializer)
+        public IEnumerable<TResultType> ExecuteQuery<TResultType>(string sql, IOrientDBRecordSerializer<byte[]> serializer) where TResultType : OrientDBEntity
         {
             byte[] data = new byte[] { };
 
-            IOrientDBEntity resultType = (IOrientDBEntity)Activator.CreateInstance<TResultType>();
+            OrientDBEntity resultType = Activator.CreateInstance<TResultType>();
             resultType.Hydrate(new Dictionary<string, object>());
 
-            return serializer.Deserialize<IOrientDBEntity>(data).Select(n => (TResultType)n).ToList();
+            throw new NotImplementedException();
+            //return serializer.Deserialize<OrientDBEntity>(data).Select(n => n as TResultType).ToList();
         }
     }
 }

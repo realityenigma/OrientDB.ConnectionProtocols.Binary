@@ -1,12 +1,12 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "0.0.5-prerelease",
 
   "dependencies": {
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"
     },
-    "OrientDB.Core": "0.0.8-prerelease",
+    "OrientDB.Core": "0.0.10-prerelease",
     "System.Linq": "4.1.0"
   },
 
