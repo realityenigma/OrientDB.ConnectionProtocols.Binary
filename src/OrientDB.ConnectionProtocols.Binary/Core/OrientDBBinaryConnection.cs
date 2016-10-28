@@ -22,6 +22,19 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
             _payloadFactory = new CommandPayloadConstructorFactory();
         }
 
+        public OrientDBBinaryConnection(string hostname, string username, string password, IOrientDBRecordSerializer<byte[]> serializer, int port = 2424, int poolsize = 10)
+        {
+            _serialier = serializer;
+            _connectionOptions = new ConnectionOptions
+            {
+                HostName = hostname,
+                Password = password,
+                PoolSize = poolsize,
+                Port = port,
+                UserName = username
+            };
+        }
+
         public void Open()
         {
             _connectionStream = new OrientDBBinaryConnectionStream(_connectionOptions);
@@ -32,12 +45,22 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         public void Close()
         {
             _connectionStream.Send(new DatabaseCloseOperation(_openResult.Token, _connectionStream.ConnectionMetaData));
-            _connectionStream.Close();            
+            _connectionStream.Close();
         }
 
         public IOrientDBCommand CreateCommand()
         {
             return new OrientDBCommand(_connectionStream, _serialier, _payloadFactory);
+        }
+
+        public bool CreateDatabase(string name, DatabaseType type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UseDatabase(string database)
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()

@@ -15,7 +15,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         public ConnectionMetaData ConnectionMetaData { get; private set; }
         private readonly ConnectionOptions _connectionOptions;
 
-        private ConcurrentBag<NetworkStream> _streamPool = new ConcurrentBag<NetworkStream>();
+        private ConcurrentBag<OrientDBNetworkConnection> _streamPool = new ConcurrentBag<OrientDBNetworkConnection>();
         private readonly Semaphore flowControl;
 
         public OrientDBBinaryConnectionStream(ConnectionOptions options)
@@ -30,7 +30,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
             flowControl = new Semaphore(options.PoolSize, options.PoolSize);
         }
 
-        private NetworkStream CreateNetworkStream()
+        private OrientDBNetworkConnection CreateNetworkStream()
         {
             var readBuffer = new byte[1024];
 
@@ -46,13 +46,13 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
             if (ConnectionMetaData.ProtocolVersion < 27)
                 ConnectionMetaData.UseTokenBasedSession = false;
 
-            return networkStream;
+            return new OrientDBNetworkConnection(socket, networkStream);
         }
 
-        private NetworkStream GetNetworkStream()
+        private OrientDBNetworkConnection GetNetworkStream()
         {
             flowControl.WaitOne();            
-            NetworkStream stream;
+            OrientDBNetworkConnection stream;
             _streamPool.TryTake(out stream);
             if (stream == null)
                 return CreateNetworkStream();
@@ -153,7 +153,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
 
             Request request = operation.CreateRequest();
 
-            var reader = Send(request, stream);
+            var reader = Send(request, stream.GetStream());
 
             T result = operation.Execute(reader);
 
@@ -163,7 +163,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         }
 
         // Return the Stream back to the pool.
-        private void ReturnStream(NetworkStream stream)
+        private void ReturnStream(OrientDBNetworkConnection stream)
         {
             if (_streamPool.Count >= _connectionOptions.PoolSize)
                 stream.Dispose();
