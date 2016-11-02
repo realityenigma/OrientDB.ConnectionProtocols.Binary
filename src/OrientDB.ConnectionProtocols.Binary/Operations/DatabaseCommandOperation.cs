@@ -29,9 +29,9 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
             _serializer = serializer;
         }
 
-        public Request CreateRequest()
+        public Request CreateRequest(int sessionId, byte[] token)
         {
-            return _payloadFactory.CreatePayload(_query, _fetchPlan, _metaData).CreatePayloadRequest();
+            return _payloadFactory.CreatePayload(_query, _fetchPlan, _metaData).CreatePayloadRequest(sessionId, token);
         }
 
         public CommandResult<T> Execute(BinaryReader reader)

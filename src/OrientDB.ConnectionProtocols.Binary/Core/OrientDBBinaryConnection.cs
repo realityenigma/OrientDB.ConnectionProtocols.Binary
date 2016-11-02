@@ -38,8 +38,14 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         public void Open()
         {
             _connectionStream = new OrientDBBinaryConnectionStream(_connectionOptions);
-            _openResult = _connectionStream.Send(new DatabaseOpenOperation(_connectionOptions, _connectionStream.ConnectionMetaData));
-            _connectionStream.ConnectionMetaData.SessionId = _openResult.SessionId; // This is temporary.
+            foreach(var stream in _connectionStream.StreamPool)
+            {
+                _openResult = _connectionStream.Send(new DatabaseOpenOperation(_connectionOptions, _connectionStream.ConnectionMetaData));
+                stream.SessionId = _openResult.SessionId;
+                stream.Token = _openResult.Token;
+            }
+            
+            //_connectionStream.ConnectionMetaData.SessionId = _openResult.SessionId; // This is temporary.
         }
 
         public void Close()

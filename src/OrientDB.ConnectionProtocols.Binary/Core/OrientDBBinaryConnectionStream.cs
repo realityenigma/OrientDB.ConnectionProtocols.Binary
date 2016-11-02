@@ -18,6 +18,8 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         private ConcurrentBag<OrientDBNetworkConnection> _streamPool = new ConcurrentBag<OrientDBNetworkConnection>();
         private readonly Semaphore flowControl;
 
+        internal ConcurrentBag<OrientDBNetworkConnection> StreamPool { get { return _streamPool; } }
+
         public OrientDBBinaryConnectionStream(ConnectionOptions options)
         {
             _connectionOptions = options;
@@ -151,7 +153,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         {
             var stream = GetNetworkStream();
 
-            Request request = operation.CreateRequest();
+            Request request = operation.CreateRequest(stream.SessionId, stream.Token);
 
             var reader = Send(request, stream.GetStream());
 
@@ -168,7 +170,10 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
             if (_streamPool.Count >= _connectionOptions.PoolSize)
                 stream.Dispose();
             else
-                _streamPool.Add(stream);
+            {
+                if(stream.IsActive())                
+                    _streamPool.Add(stream);
+            }
             flowControl.Release();
         }
 

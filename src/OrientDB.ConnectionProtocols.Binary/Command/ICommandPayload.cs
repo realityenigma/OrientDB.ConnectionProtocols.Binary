@@ -4,6 +4,6 @@ namespace OrientDB.ConnectionProtocols.Binary.Command
 {
     internal interface ICommandPayload
     {
-        Request CreatePayloadRequest();
+        Request CreatePayloadRequest(int sessionId, byte[] token);
     }
 }

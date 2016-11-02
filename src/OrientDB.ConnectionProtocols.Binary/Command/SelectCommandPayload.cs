@@ -18,7 +18,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Command
             _metaData = metaData;
         }
 
-        public Request CreatePayloadRequest()
+        public Request CreatePayloadRequest(int sessionId, byte[] token)
         {
             CommandPayloadQuery payload = new CommandPayloadQuery();
             payload.Text = _sqlString;
@@ -29,7 +29,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Command
             //base.Request(request);
 
             request.AddDataItem((byte)OperationType.COMMAND);
-            request.AddDataItem(_metaData.SessionId);
+            request.AddDataItem(sessionId);
 
             if (DriverConstants.ProtocolVersion > 26 && _metaData.UseTokenBasedSession)
             {

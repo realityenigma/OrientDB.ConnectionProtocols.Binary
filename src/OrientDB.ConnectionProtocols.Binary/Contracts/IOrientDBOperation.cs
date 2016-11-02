@@ -5,7 +5,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Contracts
 {
     internal interface IOrientDBOperation<T>
     {
-        Request CreateRequest();
+        Request CreateRequest(int sessionId, byte[] token);
         T Execute(BinaryReader reader);
     }
 }

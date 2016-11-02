@@ -18,13 +18,13 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
             _metaData = metaData;
         }
 
-        public Request CreateRequest()
+        public Request CreateRequest(int sessionId, byte[] token)
         {
             Request request = new Request(OperationMode.Synchronous);
 
             // standard request fields
             request.AddDataItem((byte)OperationType.DB_OPEN);
-            request.AddDataItem(request.SessionId);
+            request.AddDataItem(-1);
             // operation specific fields
             if (DriverConstants.ProtocolVersion >= 7)
             {
