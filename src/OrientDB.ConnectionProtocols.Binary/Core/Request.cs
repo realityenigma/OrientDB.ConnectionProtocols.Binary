@@ -13,11 +13,11 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
 
         internal int SessionId { get; private set; }
 
-        internal Request(OperationMode mode)
+        internal Request(OperationMode mode, int sessionId = -1)
         {
             this.OperationMode = mode;
             DataItems = new List<RequestDataItem>();
-            SessionId = -1;  
+            SessionId = sessionId;  
         }
 
         internal void AddDataItem(byte b)

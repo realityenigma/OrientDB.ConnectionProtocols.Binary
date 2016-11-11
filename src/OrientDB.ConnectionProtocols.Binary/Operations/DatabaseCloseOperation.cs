@@ -27,10 +27,10 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
 
         public Request CreateRequest(int sessionId, byte[] token)
         {
-            Request request = new Request(OperationMode.Asynchronous); // This may not be async actually.
+            Request request = new Request(OperationMode.Asynchronous, sessionId); // This may not be async actually.
 
             request.AddDataItem((byte)OperationType.DB_CLOSE);
-            request.AddDataItem(sessionId);
+            request.AddDataItem(request.SessionId);
 
             if (DriverConstants.ProtocolVersion > 26 && _metaData.UseTokenBasedSession)
             {

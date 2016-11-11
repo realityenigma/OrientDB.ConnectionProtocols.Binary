@@ -57,7 +57,12 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
             OrientDBNetworkConnection stream;
             _streamPool.TryTake(out stream);
             if (stream == null)
-                return CreateNetworkStream();
+            {
+                stream = CreateNetworkStream();
+                var oresult = this.Send(new DatabaseOpenOperation(_connectionOptions, this.ConnectionMetaData));
+                stream.SessionId = oresult.SessionId;
+                stream.Token = oresult.Token;
+            }
             return stream;
         }
 

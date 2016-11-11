@@ -1,5 +1,4 @@
-﻿using OrientDB.ConnectionProtocols.Binary.Command;
-using OrientDB.ConnectionProtocols.Binary.Core;
+﻿using OrientDB.ConnectionProtocols.Binary.Core;
 
 namespace OrientDB.ConnectionProtocols.Binary.Command
 {
@@ -11,6 +10,8 @@ namespace OrientDB.ConnectionProtocols.Binary.Command
                 return new SelectCommandPayload(query, fetchPlan, metaData);
             if (query.ToLower().StartsWith("insert"))
                 return new InsertCommandPayload(query, fetchPlan, metaData);
+            if(query.ToLower().StartsWith("create")) // Maybe we really don't need a bunch of different types here.
+                return new InsertCommandPayload(query, fetchPlan, metaData); // This works...
 
             return null;
         }

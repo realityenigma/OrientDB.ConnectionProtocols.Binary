@@ -59,16 +59,6 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
             return new OrientDBCommand(_connectionStream, _serialier, _payloadFactory);
         }
 
-        public bool CreateDatabase(string name, DatabaseType type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UseDatabase(string database)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Dispose()
         {
             Close();

@@ -25,15 +25,15 @@ namespace OrientDB.ConnectionProtocols.Binary.Command
             payload.NonTextLimit = -1;
             payload.FetchPlan = _fetchPlan;
 
-            Request request = new Request(OperationMode.Synchronous);
+            Request request = new Request(OperationMode.Synchronous, sessionId);
             //base.Request(request);
 
             request.AddDataItem((byte)OperationType.COMMAND);
-            request.AddDataItem(sessionId);
+            request.AddDataItem(request.SessionId);
 
             if (DriverConstants.ProtocolVersion > 26 && _metaData.UseTokenBasedSession)
             {
-                request.AddDataItem(_metaData.Token);
+                request.AddDataItem(token);
             }
 
             // operation specific fields

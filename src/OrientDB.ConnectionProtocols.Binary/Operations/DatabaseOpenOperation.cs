@@ -24,7 +24,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
 
             // standard request fields
             request.AddDataItem((byte)OperationType.DB_OPEN);
-            request.AddDataItem(-1);
+            request.AddDataItem(request.SessionId);
             // operation specific fields
             if (DriverConstants.ProtocolVersion >= 7)
             {
