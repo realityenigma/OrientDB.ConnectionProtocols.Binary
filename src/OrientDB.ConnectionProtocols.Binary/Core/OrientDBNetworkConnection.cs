@@ -9,6 +9,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         private NetworkStream _stream;
         private int _sessionId;
         private byte[] _token;
+        private int useCount = 4;
 
         public byte[] Token { get { return _token; } internal set { _token = value; } }
         public int SessionId { get { return _sessionId; } internal set { _sessionId = value; } }
@@ -38,6 +39,16 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         public bool IsActive()
         {
             return _socket != null && _socket.Connected;
+        }
+
+        public void UpdateUse()
+        {
+            useCount--;
+        }
+
+        public bool IsUsedUp()
+        {
+            return useCount <= 0;
         }
     }
 }

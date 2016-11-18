@@ -4,6 +4,8 @@ using OrientDB.ConnectionProtocols.Binary.Operations;
 using OrientDB.Core.Abstractions;
 using OrientDB.Core.Models;
 using System.Collections.Generic;
+using System;
+using Operations;
 
 namespace OrientDB.ConnectionProtocols.Binary.Core
 {
@@ -23,6 +25,11 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         public IEnumerable<T> Execute<T>(string query) where T : OrientDBEntity
         {
             return _stream.Send(new DatabaseCommandOperation<T>(_payloadFactory, _stream.ConnectionMetaData, _serializer, query)).Results;
+        }
+
+        public void Execute(string query)
+        {
+            _stream.Send(new VoidResultDatabaseCommandOperation(_payloadFactory, _stream.ConnectionMetaData, _serializer, query));
         }
     }
 }

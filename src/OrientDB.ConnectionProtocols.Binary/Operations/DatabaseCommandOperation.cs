@@ -34,8 +34,24 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
             return _payloadFactory.CreatePayload(_query, _fetchPlan, _metaData).CreatePayloadRequest(sessionId, token);
         }
 
+        // Will need to create base class for this.
+        internal byte[] ReadToken(BinaryReader reader)
+        {
+            var size = reader.ReadInt32EndianAware();
+            var token = reader.ReadBytesRequired(size);
+
+            // if token renewed
+            if (token.Length > 0) { } // Temp, not ready yet.
+                //_database.GetConnection().Token = token;
+
+            return token;
+        }
+
         public CommandResult<T> Execute(BinaryReader reader)
         {
+            if (_metaData.ProtocolVersion > 26 && _metaData.UseTokenBasedSession)
+                ReadToken(reader);
+
             PayloadStatus payloadStatus = (PayloadStatus)reader.ReadByte();
 
             List<T> documents = new List<T>();
@@ -50,12 +66,12 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
                 case PayloadStatus.SingleRecord: // 'r'
                     T document = ParseDocument(reader);
                     break;
-                //case PayloadStatus.SerializedResult: // 'a'
-                //    contentLength = reader.ReadInt32EndianAware();
-                //    byte[] serializedBytes = reader.ReadBytes(contentLength);
-                //    string serialized = System.Text.Encoding.UTF8.GetString(serializedBytes, 0, serializedBytes.Length);
-                //    responseDocument.SetField("Content", serialized);
-                //    break;
+                case PayloadStatus.SerializedResult: // 'a'
+                    contentLength = reader.ReadInt32EndianAware();
+                    byte[] serializedBytes = reader.ReadBytes(contentLength);
+                    string serialized = System.Text.Encoding.UTF8.GetString(serializedBytes, 0, serializedBytes.Length);
+                    
+                    break;
                 case PayloadStatus.RecordCollection: // 'l'                   
 
                     int recordsCount = reader.ReadInt32EndianAware();
@@ -65,19 +81,34 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
                         documents.Add(ParseDocument(reader));
                     }
                     break;
-                //case PayloadStatus.SimpleResult: //'w'
-                //    ODocument sDocument = ParseDocument(reader);
-                //    var isNestedCollection = sDocument["result"] is List<List<object>>;
-                //    responseDocument.SetField("Content",
-                //        isNestedCollection ? sDocument["result"] : sDocument["result"].ToString());
-                //    break;
+                case PayloadStatus.SimpleResult: //'w'
+                    T sDocument = ParseDocument(reader);
+                    documents.Add(sDocument);
+                    break;
                 default:
                     break;
             }
-            return new CommandResult<T>(documents);           
+
+            if (_metaData.ProtocolVersion >= 17)
+            {
+                //Load the fetched records in cache
+                while ((payloadStatus = (PayloadStatus)reader.ReadByte()) != PayloadStatus.NoRemainingRecords)
+                {
+                    T document = ParseDocument(reader);
+                    
+                    if (document != null && payloadStatus == PayloadStatus.PreFetched)
+                    {
+                        documents.Add(document);
+                        //Put in the client local cache
+                        //response.Connection.Database.ClientCache[document.ORID] = document;
+                    }
+                }
+            }
+
+            return new CommandResult<T>(documents);
         }
 
-        private T ParseDocument(BinaryReader reader) 
+        private T ParseDocument(BinaryReader reader)
         {
             T document;
 
@@ -106,7 +137,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
                 orid.ClusterPosition = reader.ReadInt64EndianAware();
                 int version = reader.ReadInt32EndianAware();
                 int recordLength = reader.ReadInt32EndianAware();
-                byte[] rawRecord = reader.ReadBytes(recordLength);                
+                byte[] rawRecord = reader.ReadBytes(recordLength);
 
                 document = _serializer.Deserialize<T>(rawRecord);
                 document.ORID = orid;

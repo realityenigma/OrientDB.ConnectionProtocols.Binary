@@ -15,10 +15,10 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         public ConnectionMetaData ConnectionMetaData { get; private set; }
         private readonly ConnectionOptions _connectionOptions;
 
-        private ConcurrentBag<OrientDBNetworkConnection> _streamPool = new ConcurrentBag<OrientDBNetworkConnection>();
+        private ConcurrentQueue<OrientDBNetworkConnection> _streamPool = new ConcurrentQueue<OrientDBNetworkConnection>();
         private readonly Semaphore flowControl;
 
-        internal ConcurrentBag<OrientDBNetworkConnection> StreamPool { get { return _streamPool; } }
+        internal ConcurrentQueue<OrientDBNetworkConnection> StreamPool { get { return _streamPool; } }
 
         public OrientDBBinaryConnectionStream(ConnectionOptions options)
         {
@@ -26,7 +26,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
 
             for (var i = 0; i < options.PoolSize; i++)
             {
-                _streamPool.Add(CreateNetworkStream());
+                _streamPool.Enqueue(CreateNetworkStream());
             }
 
             flowControl = new Semaphore(options.PoolSize, options.PoolSize);
@@ -53,16 +53,9 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
 
         private OrientDBNetworkConnection GetNetworkStream()
         {
-            flowControl.WaitOne();            
+            flowControl.WaitOne();
             OrientDBNetworkConnection stream;
-            _streamPool.TryTake(out stream);
-            if (stream == null)
-            {
-                stream = CreateNetworkStream();
-                var oresult = this.Send(new DatabaseOpenOperation(_connectionOptions, this.ConnectionMetaData));
-                stream.SessionId = oresult.SessionId;
-                stream.Token = oresult.Token;
-            }
+            _streamPool.TryDequeue(out stream);           
             return stream;
         }
 
@@ -154,31 +147,75 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
 
         private object _syncRoot = new object();
 
+        private int maxAttempts = 5;
+
         internal T Send<T>(IOrientDBOperation<T> operation)
         {
-            var stream = GetNetworkStream();
+            Exception _lastException = null;
 
-            Request request = operation.CreateRequest(stream.SessionId, stream.Token);
+            var i = maxAttempts;
+            while (i-- > 0)
+            {
+                try
+                {
+                    var stream = GetNetworkStream();
 
-            var reader = Send(request, stream.GetStream());
+                    T result = Process(operation, stream);
 
-            T result = operation.Execute(reader);
+                    ReturnStream(stream);
 
-            ReturnStream(stream);
+                    return result;
+                }
+                catch (IOException ex)
+                {
+                    if (_lastException == null)
+                        _lastException = ex;
+                    else
+                        _lastException = new Exception("Retry patern exception", ex);
+                }
+            }
 
-            return result;
+            throw _lastException;
+        }
+
+        private T Process<T>(IOrientDBOperation<T> operation, OrientDBNetworkConnection stream)
+        {
+            try
+            {
+                Request request = operation.CreateRequest(stream.SessionId, stream.Token);
+
+                var reader = Send(request, stream.GetStream());
+
+                T result = operation.Execute(reader);               
+
+                return result;
+            }
+            catch
+            {
+                Destroy(stream);
+                throw;
+            }
+        }
+
+        private void Destroy(OrientDBNetworkConnection stream)
+        {
+            stream.Dispose();
+
+            if(!_connectionOptions.IsServer)
+            {
+                stream = CreateNetworkStream();
+                var _openResult = Process(new DatabaseOpenOperation(_connectionOptions, ConnectionMetaData), stream);
+                stream.SessionId = _openResult.SessionId;
+                stream.Token = _openResult.Token;
+                ReturnStream(stream);
+            }
         }
 
         // Return the Stream back to the pool.
         private void ReturnStream(OrientDBNetworkConnection stream)
-        {
-            if (_streamPool.Count >= _connectionOptions.PoolSize)
-                stream.Dispose();
-            else
-            {
-                if(stream.IsActive())                
-                    _streamPool.Add(stream);
-            }
+        {    
+            _streamPool.Enqueue(stream);            
+
             flowControl.Release();
         }
 

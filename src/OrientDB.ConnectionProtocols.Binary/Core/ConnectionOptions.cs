@@ -11,5 +11,6 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         public string HostName { get; set; }
         public int Port { get; set; }
         public int PoolSize { get; set; } = 10;
+        public bool IsServer { get; set; } = false;
     }
 }
