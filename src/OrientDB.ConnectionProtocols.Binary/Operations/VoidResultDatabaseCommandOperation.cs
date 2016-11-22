@@ -43,7 +43,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
 
         protected bool EndOfStream(BinaryReader reader)
         {
-            return (bool)reader.BaseStream.GetType().GetProperty("DataAvailable").GetValue(reader.BaseStream);
+            return !(bool)reader.BaseStream.GetType().GetProperty("DataAvailable").GetValue(reader.BaseStream);
         }
     }
 }
