@@ -14,13 +14,12 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
         private readonly IOrientDBRecordSerializer<byte[]> _serializer;
         private readonly ConnectionOptions _options;
 
-        public DatabaseCreateOperation(string databaseName, DatabaseType databaseType, StorageType storageType, ConnectionMetaData metaData, ConnectionOptions options, IOrientDBRecordSerializer<byte[]> serializer)
+        public DatabaseCreateOperation(string databaseName, DatabaseType databaseType, StorageType storageType, ConnectionMetaData metaData, ConnectionOptions options)
         {
             _databaseName = databaseName;
             _databaseType = databaseType;
             _storageType = storageType;
             _metaData = metaData;
-            _serializer = serializer;
             _options = options;
         }
 

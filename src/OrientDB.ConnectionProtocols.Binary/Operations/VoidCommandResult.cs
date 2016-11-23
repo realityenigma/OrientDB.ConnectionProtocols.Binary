@@ -1,6 +1,6 @@
 ﻿namespace Operations
 {
-    public class VoidCommandResult
+    public class VoidResult
     {
         public bool IsSuccess { get; } = true;
     }

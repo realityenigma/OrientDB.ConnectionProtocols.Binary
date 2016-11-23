@@ -11,7 +11,7 @@ using System.Net.Sockets;
 
 namespace OrientDB.ConnectionProtocols.Binary.Operations
 {
-    internal class VoidResultDatabaseCommandOperation : IOrientDBOperation<VoidCommandResult>
+    internal class VoidResultDatabaseCommandOperation : IOrientDBOperation<VoidResult>
     {
         private readonly string _fetchPlan;
         private ConnectionMetaData _connectionMetaData;
@@ -33,12 +33,12 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
             return _payloadFactory.CreatePayload(_query, _fetchPlan, _connectionMetaData).CreatePayloadRequest(sessionId, token);
         }
 
-        public VoidCommandResult Execute(BinaryReader reader)
+        public VoidResult Execute(BinaryReader reader)
         {
             while (!EndOfStream(reader))
                 reader.ReadByte();
 
-            return new VoidCommandResult();
+            return new VoidResult();
         }
 
         protected bool EndOfStream(BinaryReader reader)

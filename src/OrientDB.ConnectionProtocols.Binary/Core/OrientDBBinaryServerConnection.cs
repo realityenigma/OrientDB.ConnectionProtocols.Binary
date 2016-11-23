@@ -29,12 +29,12 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
 
         public OrientDBBinaryConnection CreateDatabase(string database, DatabaseType type, StorageType storageType)
         {
-            return _connectionStream.Send(new DatabaseCreateOperation(database, type, storageType, _connectionStream.ConnectionMetaData, _options, _serializer));
+            return _connectionStream.Send(new DatabaseCreateOperation(database, type, storageType, _connectionStream.ConnectionMetaData, _options));
         }
 
-        public void DeleteDatabase(string database)
+        public void DropDatabase(string database, StorageType storageType)
         {
-
+            _connectionStream.Send(new DatabaseDropOperation(database, storageType, _connectionStream.ConnectionMetaData, _options));
         }
 
         public void Dispose()
