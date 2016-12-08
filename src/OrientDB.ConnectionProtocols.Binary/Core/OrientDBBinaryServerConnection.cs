@@ -37,6 +37,11 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
             _connectionStream.Send(new DatabaseDropOperation(database, storageType, _connectionStream.ConnectionMetaData, _options));
         }
 
+        public bool DatabaseExists(string database)
+        {
+            return false;
+        }
+
         public void Dispose()
         {
             _connectionStream.Close();
