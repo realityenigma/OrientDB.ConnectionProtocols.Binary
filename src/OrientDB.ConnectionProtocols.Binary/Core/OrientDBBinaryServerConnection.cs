@@ -1,4 +1,5 @@
-﻿using OrientDB.ConnectionProtocols.Binary.Operations;
+﻿using Operations;
+using OrientDB.ConnectionProtocols.Binary.Operations;
 using OrientDB.Core.Abstractions;
 using System;
 
@@ -37,9 +38,9 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
             _connectionStream.Send(new DatabaseDropOperation(database, storageType, _connectionStream.ConnectionMetaData, _options));
         }
 
-        public bool DatabaseExists(string database)
+        public bool DatabaseExists(string database, StorageType storageType)
         {
-            return false;
+            return _connectionStream.Send(new DatabaseExistsOperation(database, storageType, _connectionStream.ConnectionMetaData, _options)).Exists;
         }
 
         public void Dispose()

@@ -4,11 +4,7 @@ using OrientDB.ConnectionProtocols.Binary.Contracts;
 using OrientDB.ConnectionProtocols.Binary.Core;
 using OrientDB.ConnectionProtocols.Binary.Extensions;
 using OrientDB.ConnectionProtocols.Binary.Operations;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Operations
 {
