@@ -1,19 +1,22 @@
 {
   "title": "OrientDB.ConnectionProtocols.Binary",
-  "version": "0.0.41-prerelease",
+  "version": "0.0.42-prerelease",
 
   "dependencies": {
-    "Microsoft.NETCore.App": {
-      "type": "platform",
-      "version": "1.0.0"
-    },
-    "OrientDB.Core": "0.0.10-prerelease",
-    "System.Linq": "4.1.0"
+    "OrientDB.Core": "0.0.10-prerelease"
   },
 
   "frameworks": {
+    "net451": {},
     "netcoreapp1.0": {
-      "imports": "dnxcore50"
+      "imports": "dnxcore50",
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        },
+        "System.Linq": "4.1.0"
+      }
     }
   }
 }
