@@ -12,9 +12,9 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
         private readonly StorageType _storageType;
         private readonly ConnectionMetaData _metaData;
         private readonly IOrientDBRecordSerializer<byte[]> _serializer;
-        private readonly ConnectionOptions _options;
+        private readonly ServerConnectionOptions _options;
 
-        public DatabaseCreateOperation(string databaseName, DatabaseType databaseType, StorageType storageType, ConnectionMetaData metaData, ConnectionOptions options, IOrientDBRecordSerializer<byte[]> serializer)
+        public DatabaseCreateOperation(string databaseName, DatabaseType databaseType, StorageType storageType, ConnectionMetaData metaData, ServerConnectionOptions options, IOrientDBRecordSerializer<byte[]> serializer)
         {
             _databaseName = databaseName;
             _databaseType = databaseType;
@@ -42,7 +42,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
 
         OrientDBBinaryConnection IOrientDBOperation<OrientDBBinaryConnection>.Execute(BinaryReader reader)
         {
-            return new OrientDBBinaryConnection(new ConnectionOptions()
+            return new OrientDBBinaryConnection(new DatabaseConnectionOptions()
             {
                 Database = _databaseName,
                 HostName = _options.HostName,

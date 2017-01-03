@@ -7,11 +7,11 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
 {
     public class OrientDBBinaryServerConnection : IDisposable
     {
-        private readonly ConnectionOptions _options;
+        private readonly ServerConnectionOptions _options;
         private readonly IOrientDBRecordSerializer<byte[]> _serializer;
         private OrientDBBinaryConnectionStream _connectionStream;
 
-        public OrientDBBinaryServerConnection(ConnectionOptions options, IOrientDBRecordSerializer<byte[]> serializer)
+        public OrientDBBinaryServerConnection(ServerConnectionOptions options, IOrientDBRecordSerializer<byte[]> serializer)
         {
             _options = options;
             _serializer = serializer;

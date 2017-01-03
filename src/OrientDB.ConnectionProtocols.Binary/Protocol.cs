@@ -12,7 +12,7 @@ namespace OrientDB.ConnectionProtocols.Binary
     {
         private readonly IOrientDBConnection _connection;
 
-        public Protocol(string hostName, string userName, string password, string databaseName, DatabaseType type, int port = 2480) : this(new ConnectionOptions
+        public Protocol(string hostName, string userName, string password, string databaseName, DatabaseType type, int port = 2480) : this(new DatabaseConnectionOptions
         {
             Database = databaseName,
             Type = type,
@@ -23,7 +23,7 @@ namespace OrientDB.ConnectionProtocols.Binary
         })
         { }
 
-        public Protocol(ConnectionOptions options)
+        public Protocol(DatabaseConnectionOptions options)
         {
             
         }

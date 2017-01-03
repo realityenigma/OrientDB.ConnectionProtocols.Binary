@@ -9,10 +9,10 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
 {
     internal class DatabaseOpenOperation : IOrientDBOperation<OpenDatabaseResult>
     {
-        private readonly ConnectionOptions _options;
+        private readonly DatabaseConnectionOptions _options;
         private readonly ConnectionMetaData _metaData;
 
-        public DatabaseOpenOperation(ConnectionOptions options, ConnectionMetaData metaData)
+        public DatabaseOpenOperation(DatabaseConnectionOptions options, ConnectionMetaData metaData)
         {
             _options = options;
             _metaData = metaData;

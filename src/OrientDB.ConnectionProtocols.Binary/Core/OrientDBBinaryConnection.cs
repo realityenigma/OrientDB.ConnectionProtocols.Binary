@@ -9,13 +9,13 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
     public class OrientDBBinaryConnection : IOrientDBConnection, IDisposable
     {
         private readonly IOrientDBRecordSerializer<byte[]> _serialier;
-        private readonly ConnectionOptions _connectionOptions;
+        private readonly DatabaseConnectionOptions _connectionOptions;
         private OrientDBBinaryConnectionStream _connectionStream;
         private OpenDatabaseResult _openResult; // might not be how I model this here in the end.
         private ICommandPayloadConstructorFactory _payloadFactory;
 
 
-        public OrientDBBinaryConnection(ConnectionOptions options, IOrientDBRecordSerializer<byte[]> serializer)
+        public OrientDBBinaryConnection(DatabaseConnectionOptions options, IOrientDBRecordSerializer<byte[]> serializer)
         {
             _connectionOptions = options;
             _serialier = serializer;
@@ -25,7 +25,7 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         public OrientDBBinaryConnection(string hostname, string username, string password, IOrientDBRecordSerializer<byte[]> serializer, int port = 2424, int poolsize = 10)
         {
             _serialier = serializer;
-            _connectionOptions = new ConnectionOptions
+            _connectionOptions = new DatabaseConnectionOptions
             {
                 HostName = hostname,
                 Password = password,

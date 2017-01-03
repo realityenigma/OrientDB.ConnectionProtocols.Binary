@@ -10,10 +10,10 @@ namespace OrientDB.ConnectionProtocols.Binary.Operations
     {
         private readonly string _database;
         private readonly ConnectionMetaData _metaData;
-        private readonly ConnectionOptions _options;
+        private readonly ServerConnectionOptions _options;
         private readonly StorageType _storageType;
 
-        public DatabaseDropOperation(string database, StorageType storageType, ConnectionMetaData metaData, ConnectionOptions options)
+        public DatabaseDropOperation(string database, StorageType storageType, ConnectionMetaData metaData, ServerConnectionOptions options)
         {
             _database = database;
             _metaData = metaData;

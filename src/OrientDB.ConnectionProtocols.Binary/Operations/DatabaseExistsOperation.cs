@@ -12,10 +12,10 @@ namespace Operations
     {
         private readonly string _database;
         private readonly ConnectionMetaData _metaData;
-        private readonly ConnectionOptions _options;
+        private readonly ServerConnectionOptions _options;
         private readonly StorageType _storageType;
 
-        public DatabaseExistsOperation(string database, StorageType storageType, ConnectionMetaData metaData, ConnectionOptions options)
+        public DatabaseExistsOperation(string database, StorageType storageType, ConnectionMetaData metaData, ServerConnectionOptions options)
         {
             _database = database;
             _metaData = metaData;

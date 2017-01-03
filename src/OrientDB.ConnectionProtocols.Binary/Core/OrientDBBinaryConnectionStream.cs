@@ -13,14 +13,14 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
     public class OrientDBBinaryConnectionStream
     {
         public ConnectionMetaData ConnectionMetaData { get; private set; }
-        private readonly ConnectionOptions _connectionOptions;
+        private readonly ServerConnectionOptions _connectionOptions;
 
         private ConcurrentQueue<OrientDBNetworkConnection> _streamPool = new ConcurrentQueue<OrientDBNetworkConnection>();
         private readonly Semaphore flowControl;
 
         internal ConcurrentQueue<OrientDBNetworkConnection> StreamPool { get { return _streamPool; } }
 
-        public OrientDBBinaryConnectionStream(ConnectionOptions options)
+        public OrientDBBinaryConnectionStream(ServerConnectionOptions options)
         {
             _connectionOptions = options;
 
@@ -201,10 +201,10 @@ namespace OrientDB.ConnectionProtocols.Binary.Core
         {
             stream.Dispose();
 
-            if(!_connectionOptions.IsServer)
+            if(_connectionOptions is DatabaseConnectionOptions)
             {
                 stream = CreateNetworkStream();
-                var _openResult = Process(new DatabaseOpenOperation(_connectionOptions, ConnectionMetaData), stream);
+                var _openResult = Process(new DatabaseOpenOperation(_connectionOptions as DatabaseConnectionOptions, ConnectionMetaData), stream);
                 stream.SessionId = _openResult.SessionId;
                 stream.Token = _openResult.Token;
                 ReturnStream(stream);
