@@ -1,11 +1,8 @@
 ﻿using OrientDB.ConnectionProtocols.Binary.Extensions;
-using OrientDB.Core;
+using OrientDB.Core.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OrientDB.ConnectionProtocols.Binary.Core
 {

@@ -1,9 +1,9 @@
 {
   "title": "OrientDB.ConnectionProtocols.Binary",
-  "version": "0.0.44-prerelease",
+  "version": "0.0.45-prerelease",
 
   "dependencies": {
-    "OrientDB.Core": "0.0.15-prerelease"
+    "OrientDB.Core": "0.0.16-prerelease"
   },
 
   "frameworks": {
